@@ -1,1 +1,1 @@
-module gitee.com/pefish/p-go-string
+module github.com/pefish/go-string
