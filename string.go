@@ -10,6 +10,16 @@ type StringClass struct {
 
 var String = StringClass{}
 
+
+func (this *StringClass) Desensitize(str string) string {
+	index := strings.Index(str, `@`)
+	if index == -1 {
+		return this.DesensitizeMobile(str)
+	} else {
+		return this.DesensitizeEmail(str)
+	}
+}
+
 /**
 >7        前3后4中间4个*
 <=7 && >4 前2后2中间4个*
