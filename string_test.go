@@ -32,3 +32,9 @@ func TestStringClass_DesensitizeEmail(t *testing.T) {
 		t.Error(`a@163.com error`)
 	}
 }
+
+func TestStringClass_SpanLeft(t *testing.T) {
+	if String.SpanLeft(`1234`, 6, `0`) != `001234` {
+		t.Error()
+	}
+}
