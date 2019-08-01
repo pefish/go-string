@@ -1,4 +1,4 @@
-package p_string
+package go_string
 
 import (
 	"errors"
