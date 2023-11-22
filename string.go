@@ -1,52 +1,61 @@
 package go_string
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"strings"
 )
 
-type StringClass struct {
+type StringUtil struct {
 }
 
-var String = StringClass{}
+var StringUtilInstance = StringUtil{}
 
-
-func (this *StringClass) Desensitize(str string) string {
+func (su *StringUtil) Desensitize(str string) string {
 	index := strings.Index(str, `@`)
 	if index == -1 {
-		return this.DesensitizeMobile(str)
+		return su.DesensitizeMobile(str)
 	} else {
-		return this.DesensitizeEmail(str)
+		return su.MustDesensitizeEmail(str)
 	}
 }
 
-/**
+/*
 >7        前3后4中间4个*
 <=7 && >4 前2后2中间4个*
-<=4       报错
- */
-func (this *StringClass) DesensitizeMobile(str string) string {
+<=4 && >2 前1后1中间2个*
+*/
+func (su *StringUtil) DesensitizeMobile(str string) string {
 	result := ``
 	length := len(str)
 	if length > 7 {
-		result = str[:3] + `****` + str[length - 4:]
+		result = str[:3] + `****` + str[length-4:]
 	} else if length <= 7 && length > 4 {
-		result = str[:2] + `****` + str[length - 2:]
+		result = str[:2] + `****` + str[length-2:]
+	} else if length <= 4 && length > 2 {
+		result = str[:1] + `**` + str[length-1:]
 	} else {
-		panic(errors.New(`mobile length is too small`))
+		result = "*"
 	}
 	return result
 }
 
-/**
+func (su *StringUtil) MustDesensitizeEmail(str string) string {
+	result, err := su.DesensitizeEmail(str)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+/*
 @前字符串长度>3   前4 中4个* 后@后面所有
 @前字符串长度<=3  前@前面所有 中4个* 后@后面所有
- */
-func (this *StringClass) DesensitizeEmail(str string) string {
+*/
+func (su *StringUtil) DesensitizeEmail(str string) (string, error) {
 	result := ``
 	index := strings.Index(str, `@`)
 	if index == -1 {
-		panic(errors.New(`not email`))
+		return "", errors.New(`Not email.`)
 	}
 	preAt := str[:index]
 	if len(preAt) > 3 {
@@ -54,61 +63,76 @@ func (this *StringClass) DesensitizeEmail(str string) string {
 	} else {
 		result = preAt + `****` + str[index:]
 	}
-	return result
+	return result, nil
 }
 
-
-func (this *StringClass) RemoveLast(str string, num int) string {
+func (su *StringUtil) RemoveLast(str string, num int) string {
 	return str[:len(str)-num]
 }
 
-func (this *StringClass) RemoveFirst(str string, num int) string {
+func (su *StringUtil) RemoveFirst(str string, num int) string {
 	return str[num:]
 }
 
-func (this *StringClass) Reverse(str string) (result string) {
+func (su *StringUtil) Reverse(str string) (result string) {
 	for _, v := range str {
 		result = string(v) + result
 	}
 	return
 }
 
-func (this *StringClass) ReplaceAll(str string, oldStr string, newStr string) (result string) {
+func (su *StringUtil) ReplaceAll(str string, oldStr string, newStr string) (result string) {
 	return strings.Replace(str, oldStr, newStr, -1)
 }
 
-func (this *StringClass) SpanLeft(str string, length int, fillChar string) string {
+func (su *StringUtil) MustSpanLeft(str string, length int, fillChar string) string {
+	result, err := su.SpanLeft(str, length, fillChar)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (su *StringUtil) SpanLeft(str string, length int, fillChar string) (string, error) {
 	if len(str) > length {
-		panic(errors.New(`length is too small`))
+		return "", errors.New(`Length is too small.`)
 	}
 	if len(fillChar) != 1 {
-		panic(errors.New(`length of fillChar must be 1`))
+		return "", errors.New(`Length of fillChar must be 1.`)
 	}
 	result := ``
 	for i := 0; i < length-len(str); i++ {
 		result += fillChar
 	}
-	return result + str
+	return result + str, nil
 }
 
-func (this *StringClass) SpanRight(str string, length int, fillChar string) string {
+func (su *StringUtil) MustSpanRight(str string, length int, fillChar string) string {
+	result, err := su.SpanRight(str, length, fillChar)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (su *StringUtil) SpanRight(str string, length int, fillChar string) (string, error) {
 	if len(str) > length {
-		panic(errors.New(`length is too small`))
+		return "", errors.New(`Length is too small.`)
 	}
 	if len(fillChar) != 1 {
-		panic(errors.New(`length of fillChar must be 1`))
+		return "", errors.New(`Length of fillChar must be 1.`)
 	}
 	result := str
 	for i := 0; i < length-len(str); i++ {
 		result += fillChar
 	}
-	return result
+	return result, nil
 }
 
-func (this *StringClass) StartWith(str string, substr string) bool {
+func (su *StringUtil) StartWith(str string, substr string) bool {
 	return strings.HasPrefix(str, substr)
 }
 
-func (this *StringClass) EndWith(str string, substr string) bool {
+func (su *StringUtil) EndWith(str string, substr string) bool {
 	return strings.HasSuffix(str, substr)
 }
