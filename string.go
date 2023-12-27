@@ -2,7 +2,10 @@ package go_string
 
 import (
 	"github.com/pkg/errors"
+	"math/rand"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type StringUtil struct {
@@ -135,4 +138,39 @@ func (su *StringUtil) StartWith(str string, substr string) bool {
 
 func (su *StringUtil) EndWith(str string, substr string) bool {
 	return strings.HasSuffix(str, substr)
+}
+
+func (su *StringUtil) UserIdToInviteCode(userId uint64, length int) (string, error) {
+	userIdStr := strconv.FormatUint(userId, 10)
+	if len(userIdStr) > length {
+		return "", errors.New("Length is too small.")
+	}
+	result := ""
+	for _, a := range userIdStr {
+		result += string(a + 20)
+	}
+	if len(userIdStr) != length {
+		r, err := randomStringFromDic("ABCDEFGHIJKLMNOPQRSTUVWXYZ", int32(length-len(userIdStr)))
+		if err != nil {
+			return "", err
+		}
+		result += r
+	}
+	return result, nil
+}
+
+func randomStringFromDic(dictionary string, count int32) (string, error) {
+	b := make([]byte, count)
+	l := len(dictionary)
+
+	_, err := rand.New(rand.NewSource(time.Now().UnixNano())).Read(b)
+
+	if err != nil {
+		return "", err
+	}
+	for i, v := range b {
+		b[i] = dictionary[v%byte(l)]
+	}
+
+	return string(b), nil
 }

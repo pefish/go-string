@@ -1,6 +1,8 @@
 package go_string
 
 import (
+	"fmt"
+	go_test_ "github.com/pefish/go-test"
 	"testing"
 )
 
@@ -37,4 +39,10 @@ func TestStringClass_SpanLeft(t *testing.T) {
 	if StringUtilInstance.MustSpanLeft(`1234`, 6, `0`) != `001234` {
 		t.Error()
 	}
+}
+
+func TestStringUtil_UserIdToInviteCode(t *testing.T) {
+	result, err := StringUtilInstance.UserIdToInviteCode(234, 10)
+	go_test_.Equal(t, nil, err)
+	fmt.Println(result)
 }
